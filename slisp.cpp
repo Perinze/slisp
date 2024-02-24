@@ -28,6 +28,7 @@ int main(int argc, char **argv)
   // test intepreter
   Interpreter interpreter;
   interpreter.parse(std::cin);
+  std::cout << interpreter.eval();
 
   return EXIT_SUCCESS;
 }
