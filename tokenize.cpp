@@ -38,6 +38,7 @@ TokenSequenceType tokenize(std::istream & seq){
 
     case ' ':
     case '\t':
+    case '\r':
     case '\n':
       commit_atom_if_leaving();
       break;
