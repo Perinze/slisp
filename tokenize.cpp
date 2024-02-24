@@ -32,11 +32,13 @@ TokenSequenceType tokenize(std::istream & seq){
       break;
 
     case COMMENT:
-      return tokens;
+      commit_atom_if_leaving();
+      while (seq.get(c) && c != '\n');
       break;
 
     case ' ':
     case '\t':
+    case '\n':
       commit_atom_if_leaving();
       break;
 

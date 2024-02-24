@@ -6,14 +6,7 @@
 
 int main(int argc, char **argv)
 {
-  TokenSequenceType tokens;
-  std::string line;
-
-  while (std::getline(std::cin, line)) {
-    std::istringstream is(line);
-    auto ts = tokenize(is);
-    for (auto t : ts) tokens.push_back(t);
-  }
+  TokenSequenceType tokens = tokenize(std::cin);
 
   for (auto s : tokens) {
     std::cout << "'" << s << "' ";
