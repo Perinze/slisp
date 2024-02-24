@@ -27,6 +27,9 @@ bool Expression::operator==(const Expression & exp) const noexcept{
   if (head.type != exp.head.type) return false;
   switch (head.type)
   {
+  case NoneType:
+    break;
+
   case BooleanType:
     if (head.value.bool_value != exp.head.value.bool_value)
       return false;
@@ -53,6 +56,9 @@ std::ostream & operator<<(std::ostream & out, const Expression & exp){
   out << "(";
   switch (exp.head.type)
   {
+  case NoneType:
+    out << "()";
+    break;
   case BooleanType:
     out << (exp.head.value.bool_value ? "True" : "False");
     break;
