@@ -51,6 +51,7 @@ TokenSequenceType tokenize(std::istream & seq){
       }
     }
   }
+  commit_atom_if_leaving();
 
   return tokens;
 }
