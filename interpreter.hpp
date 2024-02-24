@@ -9,6 +9,7 @@
 // module includes
 #include "expression.hpp"
 #include "environment.hpp"
+#include "tokenize.hpp"
 
 // Interpreter has
 // Environment, which starts at a default
@@ -21,6 +22,8 @@ public:
 private:
   Environment env;
   Expression ast;
+  static Expression parse_top_down(TokenSequenceType::iterator&);
+  Expression eval_top_down(const Expression&);
 };
 
 
