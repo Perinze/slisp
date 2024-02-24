@@ -7,20 +7,21 @@
 // module includes
 #include "expression.hpp"
 
+enum EnvResultType {ExpressionType, ProcedureType};
+struct EnvResult{
+  EnvResultType type;
+  Expression exp;
+  Procedure proc;
+};
+
 class Environment{
 public:
   Environment();
-
+  bool lookup(Symbol, EnvResult&);
+  bool define(Symbol, Expression);
 private:
 
   // Environment is a mapping from symbols to expressions or procedures
-  enum EnvResultType {ExpressionType, ProcedureType};
-  struct EnvResult{
-    EnvResultType type;
-    Expression exp;
-    Procedure proc;
-  };
-
   std::map<Symbol,EnvResult> envmap;
 };
 
