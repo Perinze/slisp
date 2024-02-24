@@ -57,7 +57,7 @@ std::ostream & operator<<(std::ostream & out, const Expression & exp){
   switch (exp.head.type)
   {
   case NoneType:
-    out << "()";
+    out << "";
     break;
   case BooleanType:
     out << (exp.head.value.bool_value ? "True" : "False");
