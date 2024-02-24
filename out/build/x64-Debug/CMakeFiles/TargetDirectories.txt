@@ -1,0 +1,5 @@
+C:/3574/Proj2/out/build/x64-Debug/CMakeFiles/slisp.dir
+C:/3574/Proj2/out/build/x64-Debug/CMakeFiles/unittests.dir
+C:/3574/Proj2/out/build/x64-Debug/CMakeFiles/test.dir
+C:/3574/Proj2/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/3574/Proj2/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
