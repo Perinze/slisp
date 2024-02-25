@@ -64,14 +64,14 @@ Expression Interpreter::eval_top_down(const Expression & exp) {
       }
       return r;
     } else if (exp.head.value.sym_value == "define") {
-      if (exp.tail.size() != 2) throw "incorrect define";
-      if (exp.tail[0].head.type != SymbolType) throw "incorrect define symbol";
+      if (exp.tail.size() != 2) throw InterpreterSemanticError("incorrect define");
+      if (exp.tail[0].head.type != SymbolType) throw InterpreterSemanticError("incorrect define symbol");
       env.define(exp.tail[0].head.value.sym_value, eval_top_down(exp.tail[1]));
       return Expression();
     } else if (exp.head.value.sym_value == "if") {
-      if (exp.tail.size() != 3) throw "incorrect if";
+      if (exp.tail.size() != 3) throw InterpreterSemanticError("incorrect if");
       auto cond = eval_top_down(exp.tail[0]);
-      if (cond.head.type != BooleanType) throw "incorrect cond type";
+      if (cond.head.type != BooleanType) throw InterpreterSemanticError("incorrect cond type");
       if (cond.head.value.bool_value) {
         return eval_top_down(exp.tail[1]);
       } else {
