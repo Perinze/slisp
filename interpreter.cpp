@@ -4,12 +4,18 @@
 #include <stack>
 #include <stdexcept>
 #include <iostream>
+#include <exception>
 
 // module includes
 #include "tokenize.hpp"
 #include "expression.hpp"
 #include "environment.hpp"
 #include "interpreter_semantic_error.hpp"
+
+class InterpreterParseError: public std::runtime_error {
+public:
+  InterpreterParseError(const std::string& message): std::runtime_error(message){};
+};
 
 bool Interpreter::parse(std::istream & expression) noexcept{
   // return true if input is valid. otherwise, return false.
@@ -21,7 +27,12 @@ bool Interpreter::parse(std::istream & expression) noexcept{
     //std::cout << "no tokens\n";
   } else {
     auto it = tokens.begin();
-    ast = parse_top_down(it);
+    try {
+      ast = parse_top_down(it);
+    } catch (const InterpreterParseError &e) {
+      std::cout << "Parse error: " << e.what() << std::endl;
+      return false;
+    }
     std::cout << "ast: " << ast << std::endl;
   }
   // warning: not handling invalid input
@@ -35,14 +46,14 @@ Expression Interpreter::eval(){
 Expression Interpreter::parse_top_down(TokenSequenceType::iterator & it) {
   Expression exp;
   if (*it != "(") { // atom without parenthesis
-    if (!token_to_atom(*it, exp.head)) exit(EXIT_FAILURE);
+    if (!token_to_atom(*it, exp.head)) throw InterpreterParseError("failed to parse token: " + *it);
   } else { // (...), *it == "("
     ++it;
     if (*it == ")") { // special case: none
       exp.head.type = NoneType;
     } else {
       // assert first is atom due to its syntax
-      if (!token_to_atom(*it, exp.head)) exit(EXIT_FAILURE);
+      if (!token_to_atom(*it, exp.head)) throw InterpreterParseError("failed to parse token: " + *it);
 
       ++it;
       while (*it != ")") {
