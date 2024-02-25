@@ -6,6 +6,7 @@
 #include "tokenize.hpp"
 #include "expression.hpp"
 #include "interpreter.hpp"
+#include "interpreter_semantic_error.hpp"
 
 int main(int argc, char **argv)
 {
@@ -13,8 +14,8 @@ int main(int argc, char **argv)
     try {
       interpreter.parse(is);
       std::cout << interpreter.eval() << std::endl;
-    } catch (const char *s) {
-      std::cout << "Error: " << s << std::endl;
+    } catch (const InterpreterSemanticError &e) {
+      std::cout << "Error: " << e.what() << std::endl;
     }
   };
 
