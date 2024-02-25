@@ -87,8 +87,9 @@ bool token_to_atom(const std::string & token, Atom & atom){
     return end != s.c_str() && *end == '\0' && val != HUGE_VAL;
   };
   auto is_sym = [](const std::string & s) -> bool {
-    auto sym_regex = std::regex("[a-zA-Z_][a-zA-Z0-9_]*");
-    return std::regex_match(s, sym_regex);
+    std::regex sym("[^\\d\\s]\\S*");
+    if (std::regex_match(s, sym)) return true;
+    else return false;
   };
 
   if (token == "(" || token == ")") {
