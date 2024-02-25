@@ -39,7 +39,15 @@ bool Interpreter::parse(std::istream & expression) noexcept{
       std::cout << "Parse error: " << e.what() << std::endl;
       return false;
     }
-    std::cout << "ast: " << ast << std::endl;
+    //std::cout << "ast: " << ast << std::endl;
+    // fit single symbol case
+    //std::cout << Expression(ast.head.value.sym_value) << std::endl;
+    EnvResult _;
+    if (ast == Expression(ast.head.value.sym_value)
+        && !Environment().lookup(ast.head.value.sym_value, _)) {
+      std::cout << "Parse error: single non-keyword" << std::endl;
+      return false;
+    }
   }
   // warning: not handling invalid input
   return true;

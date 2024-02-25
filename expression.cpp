@@ -45,8 +45,9 @@ bool Expression::operator==(const Expression & exp) const noexcept{
     if (head.value.sym_value != exp.head.value.sym_value)
       return false;
     break;
-  
+
   default:
+    return false;
     break;
   }
   if (tail.size() != exp.tail.size()) return false;
