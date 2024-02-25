@@ -9,7 +9,7 @@
 EnvResult proc_not = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 1) throw "incorrect not";
+    if (args.size() != 1) throw InterpreterSemanticError("incorrect not");
     return !args[0].value.bool_value;
   }
 };
@@ -41,7 +41,7 @@ EnvResult proc_or = {
 EnvResult proc_lt = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 2) throw "incorrect compare";
+    if (args.size() != 2) throw InterpreterSemanticError("incorrect compare");
     return args[0].value.num_value < args[1].value.num_value;
   }
 };
@@ -49,7 +49,7 @@ EnvResult proc_lt = {
 EnvResult proc_le = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 2) throw "incorrect compare";
+    if (args.size() != 2) throw InterpreterSemanticError("incorrect compare");
     return args[0].value.num_value <= args[1].value.num_value;
   }
 };
@@ -57,7 +57,7 @@ EnvResult proc_le = {
 EnvResult proc_gt = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 2) throw "incorrect compare";
+    if (args.size() != 2) throw InterpreterSemanticError("incorrect compare");
     return args[0].value.num_value > args[1].value.num_value;
   }
 };
@@ -65,7 +65,7 @@ EnvResult proc_gt = {
 EnvResult proc_ge = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 2) throw "incorrect compare";
+    if (args.size() != 2) throw InterpreterSemanticError("incorrect compare");
     return args[0].value.num_value >= args[1].value.num_value;
   }
 };
@@ -73,7 +73,7 @@ EnvResult proc_ge = {
 EnvResult proc_eq = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 2) throw "incorrect compare";
+    if (args.size() != 2) throw InterpreterSemanticError("incorrect compare");
     return args[0].value.num_value == args[1].value.num_value;
   }
 };
@@ -94,13 +94,13 @@ EnvResult proc_sub = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
     if (args.size() > 2) {
-      throw "incorrect sub, too many args";
+      throw InterpreterSemanticError("incorrect sub, too many args");
     } else if (args.size() == 2) {
       return args[0].value.num_value - args[1].value.num_value;
     } else if (args.size() == 1) {
       return -args[0].value.num_value;
     } else {
-      throw "incorrect sub, too few args";
+      throw InterpreterSemanticError("incorrect sub, too few args");
     }
   }
 };
@@ -108,15 +108,19 @@ EnvResult proc_sub = {
 EnvResult proc_mul = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 2) throw "incorrect mul";
-    return args[0].value.num_value * args[1].value.num_value;
+    Number prod = 1.;
+    for (auto a : args) {
+      // TODO: check for non-number
+      prod *= a.value.num_value;
+    }
+    return prod;
   }
 };
 
 EnvResult proc_div = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 2) throw "incorrect compare";
+    if (args.size() != 2) throw InterpreterSemanticError("incorrect compare");
     return args[0].value.num_value / args[1].value.num_value;
   }
 };
@@ -124,7 +128,7 @@ EnvResult proc_div = {
 EnvResult proc_log = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 1) throw "incorrect log";
+    if (args.size() != 1) throw InterpreterSemanticError("incorrect log");
     return log10(args[0].value.num_value);
   }
 };
@@ -132,7 +136,7 @@ EnvResult proc_log = {
 EnvResult proc_pow = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() != 2) throw "incorrect pow";
+    if (args.size() != 2) throw InterpreterSemanticError("incorrect pow");
     return pow(args[0].value.num_value, args[1].value.num_value);
   }
 };
