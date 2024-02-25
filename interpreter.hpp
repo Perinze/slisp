@@ -4,6 +4,7 @@
 // system includes
 #include <string>
 #include <istream>
+#include <functional>
 
 
 // module includes
@@ -22,7 +23,7 @@ public:
 private:
   Environment env;
   Expression ast;
-  static Expression parse_top_down(TokenSequenceType::iterator&);
+  static Expression parse_top_down(const TokenSequenceType::iterator&, std::function<void()> inc);
   Expression eval_top_down(const Expression&);
 };
 

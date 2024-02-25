@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <exception>
+#include <functional>
 
 // module includes
 #include "tokenize.hpp"
@@ -27,8 +28,12 @@ bool Interpreter::parse(std::istream & expression) noexcept{
     //std::cout << "no tokens\n";
   } else {
     auto it = tokens.begin();
+    auto inc_it = [&]() {
+      if (it == tokens.end()) throw InterpreterParseError("truncated program");
+      it++;
+    };
     try {
-      ast = parse_top_down(it);
+      ast = parse_top_down(it, inc_it);
     } catch (const InterpreterParseError &e) {
       std::cout << "Parse error: " << e.what() << std::endl;
       return false;
@@ -43,25 +48,25 @@ Expression Interpreter::eval(){
   return eval_top_down(ast);
 }
 
-Expression Interpreter::parse_top_down(TokenSequenceType::iterator & it) {
+Expression Interpreter::parse_top_down(const TokenSequenceType::iterator & it, std::function<void()> inc) {
   Expression exp;
   if (*it != "(") { // atom without parenthesis
     if (!token_to_atom(*it, exp.head)) throw InterpreterParseError("failed to parse token: " + *it);
   } else { // (...), *it == "("
-    ++it;
+    inc();
     if (*it == ")") { // special case: none
       exp.head.type = NoneType;
     } else {
       // assert first is atom due to its syntax
       if (!token_to_atom(*it, exp.head)) throw InterpreterParseError("failed to parse token: " + *it);
 
-      ++it;
+      inc();
       while (*it != ")") {
-        exp.tail.push_back(parse_top_down(it));
+        exp.tail.push_back(parse_top_down(it, inc));
       }
     }
   }
-  it++;
+  inc();
   return exp;
 }
 
