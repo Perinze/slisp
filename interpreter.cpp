@@ -56,7 +56,9 @@ Expression Interpreter::parse_top_down(const TokenSequenceType::iterator & it, s
   } else { // (...), *it == "("
     inc();
     if (*it == ")") { // special case: none
-      exp.head.type = NoneType;
+      //exp.head.type = NoneType;
+      // this case can be treated invalid
+      throw InterpreterParseError("empty application");
     } else {
       // assert first is atom due to its syntax
       if (!token_to_atom(*it, exp.head)) throw InterpreterParseError("failed to parse token: " + *it);
