@@ -83,8 +83,9 @@ Expression Interpreter::eval_top_down(const Expression & exp) {
     } else if (exp.head.value.sym_value == "define") {
       if (exp.tail.size() != 2) throw InterpreterSemanticError("incorrect define");
       if (exp.tail[0].head.type != SymbolType) throw InterpreterSemanticError("incorrect define symbol");
-      env.define(exp.tail[0].head.value.sym_value, eval_top_down(exp.tail[1]));
-      return Expression();
+      Expression ret;
+      env.define(exp.tail[0].head.value.sym_value, (ret = eval_top_down(exp.tail[1])));
+      return ret;
     } else if (exp.head.value.sym_value == "if") {
       if (exp.tail.size() != 3) throw InterpreterSemanticError("incorrect if");
       auto cond = eval_top_down(exp.tail[0]);
