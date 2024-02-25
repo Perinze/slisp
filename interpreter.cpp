@@ -24,8 +24,8 @@ bool Interpreter::parse(std::istream & expression) noexcept{
 
   // in case of empty program
   if (tokens.empty()) {
-    ast = Expression();
     //std::cout << "no tokens\n";
+    return false;
   } else {
     auto it = tokens.begin();
     auto inc_it = [&]() {
