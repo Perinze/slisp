@@ -34,6 +34,7 @@ bool Interpreter::parse(std::istream & expression) noexcept{
     };
     try {
       ast = parse_top_down(it, inc_it);
+      if (it != tokens.end()) throw InterpreterParseError("unclosed program");
     } catch (const InterpreterParseError &e) {
       std::cout << "Parse error: " << e.what() << std::endl;
       return false;
