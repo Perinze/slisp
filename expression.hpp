@@ -6,7 +6,7 @@
 #include <vector>
 
 // A Type is a literal boolean, literal number, or symbol
-enum Type {NoneType, BooleanType, NumberType, ListType, SymbolType};
+enum Type {NoneType, BooleanType, NumberType, ListType, SymbolType, KeywordType};
 
 // A Boolean is a C++ bool
 typedef bool Boolean;

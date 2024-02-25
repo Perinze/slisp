@@ -73,7 +73,7 @@ Expression Interpreter::parse_top_down(const TokenSequenceType::iterator & it, s
 
 Expression Interpreter::eval_top_down(const Expression & exp) {
   EnvResult envres;
-  if (exp.head.type == SymbolType) {
+  if (exp.head.type == KeywordType) {
     if (exp.head.value.sym_value == "begin") {
       Expression r; // result
       for (auto a : exp.tail) {
@@ -84,7 +84,9 @@ Expression Interpreter::eval_top_down(const Expression & exp) {
       if (exp.tail.size() != 2) throw InterpreterSemanticError("incorrect define");
       if (exp.tail[0].head.type != SymbolType) throw InterpreterSemanticError("incorrect define symbol");
       Expression ret;
-      env.define(exp.tail[0].head.value.sym_value, (ret = eval_top_down(exp.tail[1])));
+      if (!env.define(exp.tail[0].head.value.sym_value, (ret = eval_top_down(exp.tail[1])))) {
+        throw InterpreterSemanticError("redefining " + exp.tail[0].head.value.sym_value);
+      };
       return ret;
     } else if (exp.head.value.sym_value == "if") {
       if (exp.tail.size() != 3) throw InterpreterSemanticError("incorrect if");
@@ -95,7 +97,11 @@ Expression Interpreter::eval_top_down(const Expression & exp) {
       } else {
         return eval_top_down(exp.tail[2]);
       }
-    } else if (env.lookup(exp.head.value.sym_value, envres)) {
+    } else {
+      throw InterpreterSemanticError("unexpected keyword");
+    }
+  } else if (exp.head.type == SymbolType) {
+    if (env.lookup(exp.head.value.sym_value, envres)) {
       if (envres.type == ProcedureType) {
         // 1. eval all args, retrieve their head as atom
         std::vector<Atom> args;
@@ -107,6 +113,8 @@ Expression Interpreter::eval_top_down(const Expression & exp) {
       } else {
         return envres.exp;
       }
+    } else { // unbound
+      throw InterpreterSemanticError("unbound symbol");
     }
   }
   // otherwise value

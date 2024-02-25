@@ -92,7 +92,10 @@ bool token_to_atom(const std::string & token, Atom & atom){
     else return false;
   };
 
-  if (token == "(" || token == ")") {
+  if (token == "begin" || token == "define" || token == "if") {
+    atom.type = KeywordType;
+    atom.value.sym_value = token;
+  } else if (token == "(" || token == ")") {
     return false;
   } else if (token == "True") {
     atom.type = BooleanType;
