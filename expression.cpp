@@ -4,6 +4,7 @@
 #include <limits>
 #include <cctype>
 #include <exception>
+#include <regex>
 
 // system includes
 #include <sstream>
@@ -80,6 +81,16 @@ std::ostream & operator<<(std::ostream & out, const Expression & exp){
 
 bool token_to_atom(const std::string & token, Atom & atom){
   // return true if it a token is valid. otherwise, return false.
+  auto is_num = [](const std::string & s) -> bool {
+    char *end = 0;
+    double val = strtod(s.c_str(), &end);
+    return end != s.c_str() && *end == '\0' && val != HUGE_VAL;
+  };
+  auto is_sym = [](const std::string & s) -> bool {
+    auto sym_regex = std::regex("[a-zA-Z_][a-zA-Z0-9_]*");
+    return std::regex_match(s, sym_regex);
+  };
+
   if (token == "(" || token == ")") {
     return false;
   } else if (token == "True") {
@@ -88,16 +99,18 @@ bool token_to_atom(const std::string & token, Atom & atom){
   } else if (token == "False") {
     atom.type = BooleanType;
     atom.value.bool_value = false;
-  } else { // Number or Symbol
+  } else if (is_num(token)) {
     try {
       atom.type = NumberType;
       atom.value.num_value = std::stod(token);
-    } catch (const std::invalid_argument&) {
-      atom.type = SymbolType;
-      atom.value.sym_value = token;
     } catch (const std::out_of_range&) {
       return false;
     }
+  } else if (is_sym(token)) {
+    atom.type = SymbolType;
+    atom.value.sym_value = token;
+  } else {
+    return false;
   }
   return true;
 }
