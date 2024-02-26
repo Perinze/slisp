@@ -157,7 +157,7 @@ TEST_CASE ( "Test define different type of expression and lookup", "[environment
   }
 }
 
-TEST_CASE ( "Test apply invalid number of args to fix-ary operator", "[interpreter]") {
+TEST_CASE ( "Test apply invalid number of args", "[interpreter]") {
 
   struct op_record {
     std::string name;
@@ -187,7 +187,6 @@ TEST_CASE ( "Test apply invalid number of args to fix-ary operator", "[interpret
       std::ostringstream ss;
       for (int j = 0; j < i; j++) ss << r.arg;
       std::string program = std::string("(") + r.name + ss.str() + std::string(")");
-      std::cout << program << std::endl;
 
       Interpreter interp;
 
@@ -199,6 +198,60 @@ TEST_CASE ( "Test apply invalid number of args to fix-ary operator", "[interpret
         REQUIRE_NOTHROW(interp.eval());
       } else {
         REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+      }
+    }
+  }
+}
+
+TEST_CASE ( "Test apply invalid type of args", "[interpreter]") {
+
+  struct op_record {
+    std::string name;
+    std::string arg;
+    Type type;
+    int lb, ub;
+  };
+  int max_arg = 8;
+  std::map<Type, std::string> args;
+  args[BooleanType] = " True";
+  args[NumberType] = " 42.12";
+
+  std::vector<op_record> op = {
+    op_record{"not", " False", BooleanType, 1, 1},
+    op_record{"and", " True", BooleanType, 1, max_arg},
+    op_record{"or", " True", BooleanType, 1, max_arg},
+    op_record{"<", " 1", NumberType, 2, 2},
+    op_record{"<=", " 42", NumberType, 2, 2},
+    op_record{">", " 12", NumberType, 2, 2},
+    op_record{">=", " 16", NumberType, 2, 2},
+    op_record{"=", " 129", NumberType, 2, 2},
+    op_record{"+", " 19", NumberType, 1, max_arg},
+    op_record{"-", " 19", NumberType, 1, 2},
+    op_record{"*", " 19", NumberType, 1, max_arg},
+    op_record{"/", " 19", NumberType, 2, 2},
+    op_record{"log10", " 42", NumberType, 1, 1},
+    op_record{"pow", " 42", NumberType, 2, 2}
+  };
+  std::vector<Type> ts{BooleanType, NumberType};
+  for (auto r : op) {
+    for (auto t : ts) {
+      for (int i = r.lb; i <= r.ub; i++) {
+        std::ostringstream ss;
+        for (int j = 0; j < i; j++) ss << args[t];
+        std::string program = std::string("(") + r.name + ss.str() + std::string(")");
+        std::cout << program << std::endl;
+
+        Interpreter interp;
+
+        std::istringstream iss(program);
+    
+        bool ok = interp.parse(iss);
+
+        if (t == r.type) {
+          REQUIRE_NOTHROW(interp.eval());
+        } else {
+          REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+        }
       }
     }
   }
