@@ -44,6 +44,18 @@ TEST_CASE ( "Test symbol expression constructor", "[types]" ) {
   REQUIRE(exp.tail.empty());
 }
 
+TEST_CASE ( "Test keyword inference", "[types]" ) {
+
+  std::vector<std::string> keywords{"begin", "define", "if"};
+  Atom atom;
+
+  for (auto s : keywords) {
+    REQUIRE(token_to_atom(s, atom) == true);
+    REQUIRE(atom.type == KeywordType);
+    REQUIRE(atom.value.sym_value == s);
+  }
+}
+
 TEST_CASE ( "Test apply 0 args to m-ary operator", "[interpreter]") {
 
   std::vector<std::string> programs = {
