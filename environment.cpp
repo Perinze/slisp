@@ -17,7 +17,6 @@ EnvResult proc_not = {
 EnvResult proc_and = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() == 0) throw InterpreterSemanticError("require args");
     Boolean res = true;
     for (auto a : args) {
       // TODO: check for non-number
@@ -30,7 +29,6 @@ EnvResult proc_and = {
 EnvResult proc_or = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() == 0) throw InterpreterSemanticError("require args");
     Boolean res = false;
     for (auto a : args) {
       // TODO: check for non-number
@@ -83,7 +81,6 @@ EnvResult proc_eq = {
 EnvResult proc_add = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() == 0) throw InterpreterSemanticError("require args");
     Number sum = 0.;
     for (auto a : args) {
       // TODO: check for non-number
@@ -111,7 +108,6 @@ EnvResult proc_sub = {
 EnvResult proc_mul = {
   .type=ProcedureType,
   .proc=[](const std::vector<Atom>&args) -> Expression {
-    if (args.size() == 0) throw InterpreterSemanticError("require args");
     Number prod = 1.;
     for (auto a : args) {
       // TODO: check for non-number
