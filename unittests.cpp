@@ -6,6 +6,8 @@
 #include "interpreter.hpp"
 #include "interpreter_semantic_error.hpp"
 
+#include <sstream>
+
 TEST_CASE ( "Test boolean expression constructor", "[types]" ) {
 
   {
@@ -155,20 +157,49 @@ TEST_CASE ( "Test define different type of expression and lookup", "[environment
   }
 }
 
-TEST_CASE ( "Test apply 0 args to m-ary operator", "[interpreter]") {
+TEST_CASE ( "Test apply invalid number of args to fix-ary operator", "[interpreter]") {
 
-  std::vector<std::string> programs = {
-    "(+)",
-		"(*)",
-		"(and)",
-		"(or)"};
-  for(auto s : programs){
-    Interpreter interp;
+  struct op_record {
+    std::string name;
+    std::string arg;
+    int lb, ub;
+  };
+  int max_arg = 8;
 
-    std::istringstream iss(s);
+  std::vector<op_record> op = {
+    op_record{"not", " False", 1, 1},
+    op_record{"and", " True", 0, max_arg},
+    op_record{"or", " True", 0, max_arg},
+    op_record{"<", " 1", 2, 2},
+    op_record{"<=", " 42", 2, 2},
+    op_record{">", " 12", 2, 2},
+    op_record{">=", " 16", 2, 2},
+    op_record{"=", " 129", 2, 2},
+    op_record{"+", " 19", 0, max_arg},
+    op_record{"-", " 19", 1, 2},
+    op_record{"*", " 19", 0, max_arg},
+    op_record{"/", " 19", 2, 2},
+    op_record{"log10", " 42", 1, 1},
+    op_record{"pow", " 42", 2, 2}
+  };
+  for (auto r : op) {
+    for (int i = 0; i < 8; i++) {
+      std::ostringstream ss;
+      for (int j = 0; j < i; j++) ss << r.arg;
+      std::string program = std::string("(") + r.name + ss.str() + std::string(")");
+      std::cout << program << std::endl;
+
+      Interpreter interp;
+
+      std::istringstream iss(program);
     
-    bool ok = interp.parse(iss);
+      bool ok = interp.parse(iss);
 
-    REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+      if (i >= r.lb && i <= r.ub) {
+        REQUIRE_NOTHROW(interp.eval());
+      } else {
+        REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+      }
+    }
   }
 }
