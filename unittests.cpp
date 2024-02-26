@@ -66,6 +66,95 @@ TEST_CASE ( "Test parenthesis inference", "[types]" ) {
   }
 }
 
+TEST_CASE ( "Test default environment", "[environment]" ) {
+
+  {
+    std::vector<std::string> symbols = {
+      "hello", "jdskfl", "^", "$", "_"
+    };
+
+    auto env = Environment();
+    EnvResult env_res;
+    for (auto s : symbols) {
+      REQUIRE(env.lookup(s, env_res) == false);
+    }
+  }
+
+  {
+    std::vector<std::string> symbols = {
+      "not", "and", "or", "<", "<=", ">", ">=", "=",
+      "+", "-", "*", "/", "log10", "pow", "pi"
+    };
+
+    auto env = Environment();
+    EnvResult env_res;
+    for (auto s : symbols) {
+      REQUIRE(env.lookup(s, env_res) == true);
+    }
+  }
+}
+
+TEST_CASE ( "Test lookup after define", "[environment]" ) {
+
+  std::vector<std::string> symbols = {
+    "hello", "jdskfl", "^", "$", "_"
+  };
+
+  {
+    auto env = Environment();
+    EnvResult env_res;
+    for (auto s : symbols) {
+      REQUIRE(env.define(s, Expression()) == true);
+      REQUIRE(env.lookup(s, env_res) == true);
+      REQUIRE(env_res.type == ExpressionType);
+      REQUIRE(env_res.exp == Expression());
+    }
+  }
+
+  {
+    auto env = Environment();
+    EnvResult env_res;
+    for (auto s : symbols) {
+      REQUIRE(env.define(s, Expression()) == true);
+    }
+    for (auto s : symbols) {
+      REQUIRE(env.lookup(s, env_res) == true);
+      REQUIRE(env_res.type == ExpressionType);
+      REQUIRE(env_res.exp == Expression());
+    }
+  }
+
+  {
+    auto env = Environment();
+    EnvResult env_res;
+    for (auto s : symbols) {
+      REQUIRE(env.define(s, Expression()) == true);
+    }
+    for (auto s : symbols) {
+      REQUIRE(env.lookup("unbound", env_res) == false);
+    }
+  }
+}
+
+TEST_CASE ( "Test define different type of expression and lookup", "[environment]" ) {
+
+  std::vector<std::pair<std::string, Expression>> exp{
+    std::make_pair("unit", Expression()),
+    std::make_pair("bool", Expression(true)),
+    std::make_pair("num", Expression(42.12)),
+    std::make_pair("sym", Expression("$t2"))
+  };
+
+  for (auto p : exp) {
+    auto env = Environment();
+    EnvResult env_res;
+    REQUIRE(env.define(p.first, p.second) == true);
+    REQUIRE(env.lookup(p.first, env_res) == true);
+    REQUIRE(env_res.type == ExpressionType);
+    REQUIRE(env_res.exp == p.second);
+  }
+}
+
 TEST_CASE ( "Test apply 0 args to m-ary operator", "[interpreter]") {
 
   std::vector<std::string> programs = {
