@@ -56,6 +56,16 @@ TEST_CASE ( "Test keyword inference", "[types]" ) {
   }
 }
 
+TEST_CASE ( "Test parenthesis inference", "[types]" ) {
+
+  std::vector<std::string> tokens{"(", ")"};
+  Atom atom;
+
+  for (auto s : tokens) {
+    REQUIRE(token_to_atom(s, atom) == false);
+  }
+}
+
 TEST_CASE ( "Test apply 0 args to m-ary operator", "[interpreter]") {
 
   std::vector<std::string> programs = {
