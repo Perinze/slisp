@@ -117,5 +117,6 @@ bool token_to_atom(const std::string & token, Atom & atom){
   } else {
     return false;
   }
+  return true;
 }
 
