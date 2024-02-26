@@ -3,6 +3,8 @@
 #include "catch.hpp"
 
 #include "expression.hpp"
+#include "interpreter.hpp"
+#include "interpreter_semantic_error.hpp"
 
 TEST_CASE ( "Test boolean expression constructor", "[types]" ) {
 
@@ -40,4 +42,22 @@ TEST_CASE ( "Test symbol expression constructor", "[types]" ) {
   REQUIRE(exp.head.type == SymbolType);
   REQUIRE(exp.head.value.sym_value == sym);
   REQUIRE(exp.tail.empty());
+}
+
+TEST_CASE ( "Test apply 0 args to m-ary operator", "[interpreter]") {
+
+  std::vector<std::string> programs = {
+    "(+)",
+		"(*)",
+		"(and)",
+		"(or)"};
+  for(auto s : programs){
+    Interpreter interp;
+
+    std::istringstream iss(s);
+    
+    bool ok = interp.parse(iss);
+
+    REQUIRE_THROWS_AS(interp.eval(), InterpreterSemanticError);
+  }
 }
