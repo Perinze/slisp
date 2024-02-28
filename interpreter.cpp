@@ -36,8 +36,14 @@ bool Interpreter::parse(std::istream & expression) noexcept{
       it++;
       return true;
     };
+    auto read_it = [&]() -> std::string& {
+      if (it == tokens.end()) {
+        throw InterpreterParseError("truncated program");
+      }
+      return *it;
+    };
     try {
-      ast = parse_top_down(it, inc_it);
+      ast = parse_top_down(it, read_it, inc_it);
       if (it != tokens.end()) throw InterpreterParseError("unclosed program");
     } catch (const InterpreterParseError &e) {
       std::cout << "Parse error: " << e.what() << std::endl;
@@ -61,23 +67,25 @@ Expression Interpreter::eval(){
   return eval_top_down(ast);
 }
 
-Expression Interpreter::parse_top_down(const TokenSequenceType::iterator & it, std::function<bool()> inc) {
+Expression Interpreter::parse_top_down(const TokenSequenceType::iterator & it,
+                                        std::function<std::string&(void)> read,
+                                        std::function<bool()> inc) {
   Expression exp;
-  if (*it != "(") { // atom without parenthesis
-    if (!token_to_atom(*it, exp.head)) throw InterpreterParseError("failed to parse token: " + *it);
+  if (read() != "(") { // atom without parenthesis
+    if (!token_to_atom(read(), exp.head)) throw InterpreterParseError("failed to parse token: " + read());
   } else { // (...), *it == "("
     if (!inc()) return Expression();
-    if (*it == ")") { // special case: none
+    if (read() == ")") { // special case: none
       //exp.head.type = NoneType;
       // this case can be treated invalid
       throw InterpreterParseError("empty application");
     } else {
       // assert first is atom due to its syntax
-      if (!token_to_atom(*it, exp.head)) throw InterpreterParseError("failed to parse token: " + *it);
+      if (!token_to_atom(read(), exp.head)) throw InterpreterParseError("failed to parse token: " + read());
 
       if (!inc()) return Expression();
-      while (*it != ")") {
-        exp.tail.push_back(parse_top_down(it, inc));
+      while (read() != ")") {
+        exp.tail.push_back(parse_top_down(it, read, inc));
       }
     }
   }

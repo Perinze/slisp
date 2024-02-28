@@ -23,7 +23,7 @@ public:
 private:
   Environment env;
   Expression ast;
-  static Expression parse_top_down(const TokenSequenceType::iterator&, std::function<bool()> inc);
+  static Expression parse_top_down(const TokenSequenceType::iterator&, std::function<std::string&(void)>, std::function<bool()>);
   Expression eval_top_down(const Expression&);
 };
 
