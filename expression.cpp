@@ -11,17 +11,17 @@
 
 Expression::Expression(bool tf){
   head.type = BooleanType;
-  head.value = Value{.bool_value=tf};
+  head.value.bool_value = tf;
 }
 
 Expression::Expression(double num){
   head.type = NumberType;
-  head.value = Value{.num_value=num};
+  head.value.num_value = num;
 }
 
 Expression::Expression(const std::string & sym){
   head.type = SymbolType;
-  head.value = Value{.sym_value=sym};
+  head.value.sym_value = sym;
 }
 
 bool Expression::operator==(const Expression & exp) const noexcept{
