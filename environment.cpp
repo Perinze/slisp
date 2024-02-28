@@ -211,6 +211,6 @@ bool Environment::define(Symbol sym, Expression exp) {
   if (envmap.find(sym) != envmap.end()) {
     return false;
   }
-  envmap[sym] = {.type=ExpressionType, .exp=exp};
+  envmap[sym] = {ExpressionType, exp};
   return true;
 }
