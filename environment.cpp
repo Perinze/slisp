@@ -176,7 +176,7 @@ EnvResult proc_pow = {
 
 EnvResult const_pi = {
   ExpressionType,
-  Expression()
+  Expression(atan2(0, -1))
 };
 
 Environment::Environment(){
